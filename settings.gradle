@@ -1,0 +1,3 @@
+rootProject.name = 'OSRSBot'
+include ":OSRSBot"
+project(":OSRSBot").projectDir = file("../OSRSBot")

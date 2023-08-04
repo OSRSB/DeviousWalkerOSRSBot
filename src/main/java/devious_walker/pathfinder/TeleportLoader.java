@@ -29,6 +29,7 @@ import devious_walker.pathfinder.model.Teleport;
 import devious_walker.pathfinder.model.TeleportItem;
 import devious_walker.pathfinder.model.TeleportSpell;
 import devious_walker.pathfinder.model.poh.HousePortal;
+import net.runelite.rsb.internal.globval.enums.InterfaceTab;
 import net.runelite.rsb.internal.globval.enums.MagicBook;
 import net.runelite.rsb.internal.globval.enums.Spell;
 import net.runelite.rsb.wrappers.RSItem;
@@ -414,7 +415,17 @@ public class TeleportLoader
 		{
 			if (!methods.npcChat.hasOptions())
 			{
-				inv.doAction("Rub");
+				if (methods.game.getCurrentTab() != InterfaceTab.INVENTORY) {
+					methods.game.openTab(InterfaceTab.INVENTORY, true);
+				}
+				String[] options = inv.getDefinition().getInterfaceOptions();
+
+				if (options != null && Arrays.stream(options).anyMatch(target::equals)) {
+					inv.doAction(target);
+				}
+				else {
+					inv.doAction("Rub");
+				}
 				sleep(1200, () -> methods.npcChat.hasOptions());
 				return;
 			}
@@ -430,6 +441,9 @@ public class TeleportLoader
 		RSItem equipped = methods.equipment.query().id(ids).first();
 		if (equipped != null)
 		{
+			if (methods.game.getCurrentTab() != InterfaceTab.EQUIPMENT) {
+				methods.game.openTab(InterfaceTab.EQUIPMENT, true);
+			}
 			equipped.doAction(target);
 		}
 	}
@@ -686,6 +700,10 @@ public class TeleportLoader
 
 		if (inv != null)
 		{
+			if (methods.game.getCurrentTab() != InterfaceTab.INVENTORY) {
+				methods.game.openTab(InterfaceTab.INVENTORY, true);
+			}
+
 			RSWidget baseWidget = methods.interfaces.getComponent(187, 3);
 			if (baseWidget.isVisible())
 			{
@@ -758,6 +776,9 @@ public class TeleportLoader
 				RSItem item = methods.inventory.getItem(teleportItem.getItemId());
 				if (item != null)
 				{
+					if (methods.game.getCurrentTab() != InterfaceTab.INVENTORY) {
+						methods.game.openTab(InterfaceTab.INVENTORY, true);
+					}
 					item.doAction(teleportItem.getAction());
 				}
 			});
@@ -830,10 +851,20 @@ public class TeleportLoader
 	public static void slayerRingTeleport(String target, int... ids)
 	{
 		RSItem ring = methods.inventory.getItem(ids);
-
-		if (ring == null && RegionManager.useEquipmentJewellery())
+		if (ring != null) {
+			if (methods.game.getCurrentTab() != InterfaceTab.INVENTORY) {
+				methods.game.openTab(InterfaceTab.INVENTORY, true);
+			}
+		}
+		else if (ring == null && RegionManager.useEquipmentJewellery())
 		{
 			ring = methods.equipment.query().id(ids).first();
+			if (ring != null)
+			{
+				if (methods.game.getCurrentTab() != InterfaceTab.EQUIPMENT) {
+					methods.game.openTab(InterfaceTab.EQUIPMENT, true);
+				}
+			}
 		}
 
 		if (ring != null)

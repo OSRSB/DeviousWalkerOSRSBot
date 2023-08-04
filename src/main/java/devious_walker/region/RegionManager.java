@@ -62,6 +62,7 @@ public class RegionManager
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        init();
     }
 
     private static final Set<Integer> REFRESH_WIDGET_IDS = Set.of(WidgetInfo.QUEST_COMPLETED_NAME_TEXT.getGroupId(), WidgetInfo.LEVEL_UP_LEVEL.getGroupId());
@@ -156,16 +157,20 @@ public class RegionManager
         return ConfigManager.housePortals;
     }
 
-    @Inject
-    public void init()
+    public static void init()
     {
-        executorService.submit(TransportLoader::init);
-        methods.runeLite.eventBus.register(this);
+        log.error("INIT");
+        singleton = methods.runeLite.getInjector().getInstance(RegionManager.class);
+        singleton.executorService.submit(TransportLoader::init);
+        methods.runeLite.eventBus.register(singleton);
+        TeleportLoader.refreshTeleports();
+        TransportLoader.refreshTransports();
     }
 
     @Subscribe(priority = Integer.MAX_VALUE)
     public void onGameStateChanged(GameStateChanged event)
     {
+        log.error("TICK");
         switch (event.getGameState())
         {
             case UNKNOWN:
@@ -211,7 +216,7 @@ public class RegionManager
     }
 
     @Subscribe(priority = Integer.MAX_VALUE)
-    public void onVarChanged(VarbitChanged event)
+    public void onVarbitChanged(VarbitChanged event)
     {
         if (REFRESH_VARBITS.contains(event.getVarbitId()))
         {

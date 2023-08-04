@@ -159,7 +159,6 @@ public class RegionManager
 
     public static void init()
     {
-        log.error("INIT");
         singleton = methods.runeLite.getInjector().getInstance(RegionManager.class);
         singleton.executorService.submit(TransportLoader::init);
         methods.runeLite.eventBus.register(singleton);
@@ -170,7 +169,6 @@ public class RegionManager
     @Subscribe(priority = Integer.MAX_VALUE)
     public void onGameStateChanged(GameStateChanged event)
     {
-        log.error("TICK");
         switch (event.getGameState())
         {
             case UNKNOWN:

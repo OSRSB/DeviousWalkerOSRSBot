@@ -201,6 +201,23 @@ public class TeleportLoader
 					}
 				}
 
+				if (drakansMedalion())
+				{
+					teleports.add(new Teleport(new WorldPoint(3649, 3230, 0), 6,
+							() -> jewelryTeleport("Ver Sinhaza", DRAKANS_MEDALLION)));
+					if (Quests.isFinished(Quest.SINS_OF_THE_FATHER)) {
+						teleports.add(new Teleport(new WorldPoint(3592, 3337, 0), 6,
+								() -> jewelryTeleport("Darkmeyer", DRAKANS_MEDALLION)));
+					}
+					// TODO: figure out this varbit
+					/*
+					if (methods.client.getVarbitValue()) {
+						teleports.add(new Teleport(new WorldPoint(3652, 3214, 0), 6,
+								() -> jewelryTeleport("Slepe", DRAKANS_MEDALLION)));
+					}
+					 */
+				}
+
 				if (methods.combat.getWildernessLevel() <= 30)
 				{
 					if (combatBracelet())
@@ -894,6 +911,12 @@ public class TeleportLoader
 	{
 		return methods.inventory.getItem(DIGSITE_PENDANT) != null
 				|| (RegionManager.useEquipmentJewellery() && methods.equipment.query().id(DIGSITE_PENDANT).first() != null);
+	}
+
+	public static boolean drakansMedalion()
+	{
+		return methods.inventory.getItem(DRAKANS_MEDALLION) != null
+				|| (RegionManager.useEquipmentJewellery() && methods.equipment.query().id(DRAKANS_MEDALLION).first() != null);
 	}
 
 	public static boolean burningAmulet()

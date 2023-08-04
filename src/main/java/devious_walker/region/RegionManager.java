@@ -206,10 +206,7 @@ public class RegionManager
     {
         if (REFRESH_WIDGET_IDS.contains(event.getGroupId()))
         {
-            if (hasChanged())
-            {
-                REFRESH_PATH = true;
-            }
+            REFRESH_PATH = true;
         }
     }
 
@@ -218,11 +215,8 @@ public class RegionManager
     {
         if (REFRESH_VARBITS.contains(event.getVarbitId()))
         {
-            if (hasChanged())
-            {
-                log.debug("Path refresh triggered by varbit {} change", event.getVarbitId());
-                REFRESH_PATH = true;
-            }
+            log.debug("Path refresh triggered by varbit {} change", event.getVarbitId());
+            REFRESH_PATH = true;
         }
     }
 
@@ -231,10 +225,7 @@ public class RegionManager
     {
         if (event.getContainerId() == InventoryID.INVENTORY.getId() || event.getContainerId() == InventoryID.EQUIPMENT.getId())
         {
-            if (hasChanged())
-            {
-                REFRESH_PATH = true;
-            }
+            REFRESH_PATH = true;
         }
     }
 
@@ -259,7 +250,7 @@ public class RegionManager
 
      */
 
-    private boolean hasChanged()
+    public boolean hasChanged()
     {
         boolean tranChanged = transportsChanged();
         boolean teleChanged = teleportsChanged();

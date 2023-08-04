@@ -32,7 +32,7 @@ public class Walker
 {
     public static final int MAX_INTERACT_DISTANCE = 20;
     private static final int MIN_TILES_WALKED_IN_STEP = 7;
-    private static final int MAX_TILES_WALKED_IN_STEP = 14;
+    private static final int MAX_TILES_WALKED_IN_STEP = 20;
     private static final int MAX_MIN_ENERGY = 50;
     private static final int MIN_ENERGY = 5;
     private static final int MAX_NEAREST_SEARCH_ITERATIONS = 10;
@@ -457,6 +457,9 @@ public class Walker
 		if (shouldRefresh)
 		{
 			log.debug("Path should refresh!");
+            if (!RegionManager.singleton.hasChanged()) {
+                shouldRefresh = false;
+            }
 		}
 
         if (!sameDestination || shouldRefresh || forced)

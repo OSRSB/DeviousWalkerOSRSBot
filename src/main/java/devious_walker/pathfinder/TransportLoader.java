@@ -394,7 +394,7 @@ public class TransportLoader
     {
         return new Transport(source, destination, 0, 0, () ->
         {
-
+            log.debug("lockingDoorTransport: " + source + " -> " + destination);
             RSObject openDoor = methods.objects.query().id(openDoorId).distance(new RSTile(source), 1).first();
             if (openDoor != null)
             {
@@ -412,6 +412,7 @@ public class TransportLoader
     {
         return new Transport(source, destination, Integer.MAX_VALUE, 0, () ->
         {
+            log.debug("trapDoorTransport: " + source + " -> " + destination);
             RSObject openedTrapdoor = methods.objects.query().id(openedId).distance(new RSTile(source), 5).first();
             if (openedTrapdoor != null)
             {
@@ -479,6 +480,7 @@ public class TransportLoader
     {
         return new Transport(source, destination, Integer.MAX_VALUE, 0, () ->
         {
+            log.debug("itemUseTransport: " + source + " -> " + destination);
             RSItem item = methods.inventory.getItem(itemId);
             if (item == null)
             {
@@ -502,6 +504,7 @@ public class TransportLoader
     {
         return new Transport(source, destination, 10, 0, () ->
         {
+            log.debug("npcTransport: " + source + " -> " + destination);
             RSNPC npc = methods.npcs.getNearest(x -> x.getLocation().getWorldLocation().distanceTo(source) <= 10 && x.getID() == npcId);
             if (npc != null)
             {
@@ -519,6 +522,7 @@ public class TransportLoader
     {
         return new Transport(source, destination, 10, 0, () ->
         {
+            log.debug("npcTransport: " + source + " -> " + destination);
             RSNPC npc =  methods.npcs.getNearest(x -> x.getLocation().getWorldLocation().distanceTo(source) <= 10 && x.getName().equalsIgnoreCase(npcName));
             if (npc != null)
             {
@@ -536,6 +540,7 @@ public class TransportLoader
     {
         return new Transport(source, destination, 10, 0, () ->
         {
+            log.debug("npcDialogTransport: " + source + " -> " + destination);
             if (methods.npcChat.canContinue())
             {
                 methods.npcChat.clickContinue(true);
@@ -570,6 +575,7 @@ public class TransportLoader
     {
         return new Transport(source, destination, Integer.MAX_VALUE, 0, () ->
         {
+            log.debug("objectTransport: " + source + " -> " + destination);
             RSObject first = methods.objects.query().id(objId).located(new RSTile(source)).first();
             if (first != null)
             {
@@ -593,6 +599,7 @@ public class TransportLoader
     {
         return new Transport(source, destination, Integer.MAX_VALUE, 0, () ->
         {
+            log.debug("objectTransport: " + source + " -> " + destination);
             RSObject first = methods.objects.query().id(objId).located(new RSTile(source)).first();
             if (first != null)
             {
@@ -638,6 +645,7 @@ public class TransportLoader
     {
         return new Transport(source, destination, Integer.MAX_VALUE, 0, () ->
         {
+            log.debug("objectDialogTransport: " + source + " -> " + destination);
             if (methods.npcChat.isOpen())
             {
                 if (methods.npcChat.canContinue())
@@ -669,6 +677,7 @@ public class TransportLoader
     {
         return new Transport(source, destination, Integer.MAX_VALUE, 0, () ->
         {
+            log.debug("slashWebTransport: " + source + " -> " + destination);
             RSObject transport = methods.objects.query().namedContains("Web").distance(new RSTile(source), 5).first();
             // TODO: check has action
             //RSObject transport = TileObjects.getFirstSurrounding(source, 5, it -> it.getName() != null && it.getName().contains("Web") && it.hasAction("Slash"));
@@ -692,6 +701,7 @@ public class TransportLoader
                 0,
                 () ->
                 {
+                    log.debug("spritTreeTransport: " + source + " -> " + target);
                     RSWidget treeWidget = methods.interfaces.getComponent(187, 3);
                     if (treeWidget.isVisible())
                     {
@@ -726,6 +736,7 @@ public class TransportLoader
                 0,
                 () ->
                 {
+                    log.debug("mushtreeTransport: " + source + " -> " + target);
                     RSWidget treeWidget = methods.interfaces.getComponent(widget.getGroupId(), widget.getChildId());
                     if (treeWidget.isVisible())
                     {

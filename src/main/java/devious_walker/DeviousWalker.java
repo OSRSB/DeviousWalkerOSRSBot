@@ -76,7 +76,7 @@ public class DeviousWalker
 			Tile nearestInScene = Arrays.stream(methods.client.getScene().getTiles()[methods.client.getPlane()])
 					.flatMap(Arrays::stream)
 					.filter(tile -> tile != null)
-					.min(Comparator.comparingInt(x -> x.getWorldLocation().distanceTo(local.getWorldLocation())))
+					.min(Comparator.comparingInt(x -> x.getWorldLocation().distanceTo(worldPoint)))
 					.orElse(null);
 
 			// TODO: check which of these is better

@@ -11,6 +11,7 @@ import devious_walker.GameThread;
 import devious_walker.pathfinder.model.TeleportMinigame;
 import devious_walker.quests.Quests;
 import devious_walker.region.RegionManager;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
@@ -36,6 +37,7 @@ import net.runelite.rsb.wrappers.RSItem;
 import net.runelite.rsb.wrappers.RSObject;
 import net.runelite.rsb.wrappers.RSWidget;
 
+@Slf4j
 public class TeleportLoader
 {
 	private static Pattern WILDY_PATTERN = Pattern.compile("Okay, teleport to level [\\d,]* Wilderness\\.");
@@ -84,6 +86,8 @@ public class TeleportLoader
 					{
 						teleports.add(new Teleport(teleportSpell.getPoint(), 5, () ->
 						{
+							log.debug("Teleporting to {}", teleportSpell.getSpell());
+
 							final Spell spell = teleportSpell.getSpell();
 							if (teleportSpell == TeleportSpell.TELEPORT_TO_HOUSE)
 							{
@@ -394,6 +398,7 @@ public class TeleportLoader
 
 	public static void enterHouse()
 	{
+		log.debug("Entering house");
 		if (TeleportSpell.TELEPORT_TO_HOUSE.canCast())
 		{
 			methods.magic.castSpell(MagicBook.Standard.TELEPORT_TO_HOUSE);
@@ -409,6 +414,7 @@ public class TeleportLoader
 
 	public static void jewelryTeleport(String target, int... ids)
 	{
+		log.debug("Jewelry teleporting to {} with {}", target, Arrays.toString(ids));
 		RSItem inv = methods.inventory.getItem(ids);
 
 		if (inv != null)
@@ -452,6 +458,7 @@ public class TeleportLoader
 	{
 		return new Teleport(housePortal.getDestination(), 10, () ->
 		{
+			log.debug("Entering house portal");
 			if (!methods.players.getMyPlayer().isIdle() || methods.client.getGameState() == GameState.LOADING)
 			{
 				return;
@@ -650,6 +657,7 @@ public class TeleportLoader
 		WorldPoint destination = housePortal.getDestination();
 		return new Teleport(destination, 10, () ->
 		{
+			log.debug("Teleporting with POH Nexus: {}", housePortal);
 			if (!methods.players.getMyPlayer().isIdle() || methods.client.getGameState() == GameState.LOADING)
 			{
 				return;
@@ -696,6 +704,7 @@ public class TeleportLoader
 
 	public static void jewelryPopupTeleport(String target, int... ids)
 	{
+		log.debug("Teleporting with jewelry: {}", target);
 		RSItem inv = methods.inventory.getItem(ids);
 
 		if (inv != null)
@@ -747,6 +756,7 @@ public class TeleportLoader
 	{
 		return new Teleport(destination, 10, () ->
 		{
+			log.debug("Teleporting with POH Digsite Pendant: {}", destination);
 			if (!methods.players.getMyPlayer().isIdle() || methods.client.getGameState() == GameState.LOADING)
 			{
 				return;
@@ -773,6 +783,7 @@ public class TeleportLoader
 	{
 			return new Teleport(teleportItem.getDestination(), 5, () ->
 			{
+				log.debug("Teleporting with item: {}", teleportItem);
 				RSItem item = methods.inventory.getItem(teleportItem.getItemId());
 				if (item != null)
 				{
@@ -792,6 +803,7 @@ public class TeleportLoader
 	{
 		return new Teleport(destination, 10, () ->
 		{
+			log.debug("Teleporting with POH Widget: {}", destination);
 			if (!methods.players.getMyPlayer().isIdle() || methods.client.getGameState() == GameState.LOADING)
 			{
 				return;
@@ -821,6 +833,7 @@ public class TeleportLoader
 	{
 		return new Teleport(destination, 10, () ->
 		{
+			log.debug("Teleporting with POH Mounted: {}", destination);
 			if (!methods.players.getMyPlayer().isIdle() || methods.client.getGameState() == GameState.LOADING)
 			{
 				return;
@@ -850,6 +863,7 @@ public class TeleportLoader
 
 	public static void slayerRingTeleport(String target, int... ids)
 	{
+		log.debug("Teleporting with Slayer Ring: {}", target);
 		RSItem ring = methods.inventory.getItem(ids);
 		if (ring != null) {
 			if (methods.game.getCurrentTab() != InterfaceTab.INVENTORY) {

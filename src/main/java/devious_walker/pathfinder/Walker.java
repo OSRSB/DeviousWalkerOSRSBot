@@ -316,7 +316,7 @@ public class Walker
                 }
                 wall.doAction("Open");
                 log.debug("Handling door at {}", wall.getLocation().getWorldLocation());
-                sleep(2000, () -> tileA.getWallObject() == null
+                sleep(5000, () -> tileA.getWallObject() == null
                         || !Reachable.isClosedDoor(tileA.getWallObject().getId()));
                 return true;
             }
@@ -330,7 +330,7 @@ public class Walker
                 }
                 wall.doAction("Open");
                 log.debug("Handling door at {}", wall.getLocation().getWorldLocation());
-                sleep(2000, () -> tileB.getWallObject() == null
+                sleep(5000, () -> tileB.getWallObject() == null
                         || !Reachable.isClosedDoor(tileB.getWallObject().getId()));
                 return true;
             }

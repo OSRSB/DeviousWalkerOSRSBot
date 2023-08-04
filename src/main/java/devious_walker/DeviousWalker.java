@@ -151,7 +151,7 @@ public class DeviousWalker
 	{
 		while (methods.players.getMyPlayer().getLocation().getWorldLocation().distanceTo(worldArea) > 3 &&
 				worldArea.getPlane() == methods.players.getMyPlayer().getLocation().getPlane()) {
-			sleep(4000, () -> getDestination() == null || getDestination().distanceTo(methods.players.getMyPlayer().getPosition().getWorldLocation()) < 9);
+			sleep(4000, () -> getDestination() == null || getDestination().distanceTo(methods.players.getMyPlayer().getPosition().getWorldLocation()) < 15);
 			Walker.walkTo(worldArea);
 		}
 		return true;
@@ -161,7 +161,7 @@ public class DeviousWalker
 	{
 		while (methods.players.getMyPlayer().getLocation().getWorldLocation().distanceTo(worldPoint) > 3 &&
 				worldPoint.getPlane() == methods.players.getMyPlayer().getLocation().getPlane()) {
-			sleep(4000, () -> getDestination() == null || getDestination().distanceTo(methods.players.getMyPlayer().getPosition().getWorldLocation()) < 9);
+			sleep(4000, () -> getDestination() == null || getDestination().distanceTo(methods.players.getMyPlayer().getPosition().getWorldLocation()) < 15);
 			Walker.walkTo(worldPoint);
 		}
 		return true;

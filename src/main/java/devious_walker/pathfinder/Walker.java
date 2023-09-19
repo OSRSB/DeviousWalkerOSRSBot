@@ -11,6 +11,7 @@ import devious_walker.DeviousWalker;
 import devious_walker.Reachable;
 import devious_walker.pathfinder.model.Teleport;
 import devious_walker.pathfinder.model.Transport;
+import net.runelite.cache.region.Region;
 import net.runelite.rsb.util.StdRandom;
 import net.runelite.rsb.wrappers.*;
 
@@ -49,7 +50,9 @@ public class Walker
     public static boolean walkTo(WorldArea destination)
     {
         RSPlayer local = methods.players.getMyPlayer();
-        if (destination.contains(local.getLocation().getWorldLocation()))
+        WorldPoint playerPoint = WorldPoint.fromLocalInstance(methods.client, local.getLocation().getLocalLocation());
+
+        if (destination.contains(playerPoint))
         {
             currentDestination = null;
             return true;
@@ -74,10 +77,14 @@ public class Walker
             return false;
         }
 
+        List<WorldPoint> instancedPath = path.stream().map(point -> WorldPoint.toLocalInstance(methods.client, point).stream().findFirst().orElse(point)).toList();
+
+        log.debug("InstancedPath: " + instancedPath);
+
         WorldPoint startPosition = path.get(0);
         Teleport teleport = teleports.get(startPosition);
         WorldPoint localWP = local.getLocation().getWorldLocation();
-        boolean offPath = path.stream().noneMatch(t -> t.distanceTo(localWP) <= 5 && canPathTo(localWP, t));
+        boolean offPath = instancedPath.stream().noneMatch(t -> t.distanceTo(localWP) <= 5 && canPathTo(localWP, t));
 
         // Teleport or refresh path if our direction changed
         if (offPath)
@@ -85,7 +92,7 @@ public class Walker
             if (teleport != null)
             {
                 log.debug("Casting teleport {}", teleport);
-                if (methods.players.getMyPlayer().isIdle())
+                if (methods.players.getMyPlayer().isIdle() || methods.players.getMyPlayer().isInCombat())
                 {
                     teleport.getHandler().run();
                     sleep(1000);
@@ -95,10 +102,11 @@ public class Walker
             }
 
             path = buildPath(destination, true);
+            instancedPath = path.stream().map(point -> WorldPoint.toLocalInstance(methods.client, point).stream().findFirst().orElseThrow()).toList();
             log.debug("Refreshed path {}", path.size() - 1);
         }
 
-        return walkAlong(path, transports);
+        return walkAlong(instancedPath, transports);
     }
 
     public static boolean walkAlong(List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports)
@@ -116,6 +124,7 @@ public class Walker
     public static boolean stepAlong(List<WorldPoint> path)
     {
         List<WorldPoint> reachablePath = reachablePath(path);
+        log.debug("reachablePath: " + reachablePath);
         if (reachablePath.isEmpty())
         {
             return false;
@@ -498,9 +507,10 @@ public class Walker
     public static List<WorldPoint> buildPath(WorldArea destination, boolean avoidWilderness, boolean forced)
     {
         RSPlayer local = methods.players.getMyPlayer();
+        WorldPoint playerPoint = WorldPoint.fromLocalInstance(methods.client, local.getLocation().getLocalLocation());
         LinkedHashMap<WorldPoint, Teleport> teleports = buildTeleportLinks(destination);
         List<WorldPoint> startPoints = new ArrayList<>(teleports.keySet());
-        startPoints.add(local.getLocation().getWorldLocation());
+        startPoints.add(playerPoint);
 
         return buildPath(startPoints, destination, avoidWilderness, forced);
     }
@@ -560,11 +570,12 @@ public class Walker
         }
 
         RSPlayer local = methods.players.getMyPlayer();
+        WorldPoint playerPoint = WorldPoint.fromLocalInstance(methods.client, local.getLocation().getLocalLocation());
 
         for (Teleport teleport : TeleportLoader.buildTeleports())
         {
-            if (teleport.getDestination().distanceTo(local.getLocation().getWorldLocation()) > 50
-                    && destination.distanceTo(local.getPosition().getWorldLocation()) > destination.distanceTo(teleport.getDestination()) + 20)
+            if (teleport.getDestination().distanceTo(playerPoint) > 50
+                    && destination.distanceTo(playerPoint) > destination.distanceTo(teleport.getDestination()) + 20)
             {
                 out.putIfAbsent(teleport.getDestination(), teleport);
             }
@@ -895,5 +906,18 @@ public class Walker
     {
         List<WorldPoint> pathTo = pathTo(start, destination);
         return pathTo != null && pathTo.contains(destination);
+    }
+
+    public static boolean canWalk(WorldPoint destination)
+    {
+        return canWalk(destination.toWorldArea());
+    }
+
+    public static boolean canWalk(WorldArea destination)
+    {
+        Map<WorldPoint, List<Transport>> transports = buildTransportLinks();
+        LinkedHashMap<WorldPoint, Teleport> teleports = buildTeleportLinks(destination);
+        List<WorldPoint> path = buildPath(destination);
+        return path != null && path.stream().anyMatch(p -> destination.contains(p));
     }
 }

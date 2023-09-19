@@ -408,6 +408,15 @@ public class TeleportLoader
 		RSItem teleTab = methods.inventory.getItem(ItemID.TELEPORT_TO_HOUSE);
 		if (teleTab != null)
 		{
+			if (methods.game.getCurrentTab() != InterfaceTab.INVENTORY) {
+				methods.game.openTab(InterfaceTab.INVENTORY, true);
+			}
+
+			RSItem selectedItem = methods.inventory.getSelectedItem();
+			if (selectedItem != null) {
+				selectedItem.doAction("Cancel");
+			}
+
 			teleTab.doAction("Break");
 		}
 	}
@@ -424,6 +433,12 @@ public class TeleportLoader
 				if (methods.game.getCurrentTab() != InterfaceTab.INVENTORY) {
 					methods.game.openTab(InterfaceTab.INVENTORY, true);
 				}
+
+				RSItem selectedItem = methods.inventory.getSelectedItem();
+				if (selectedItem != null) {
+					selectedItem.doAction("Cancel");
+				}
+
 				String[] options = inv.getDefinition().getInterfaceOptions();
 
 				if (options != null && Arrays.stream(options).anyMatch(target::equals)) {
@@ -713,6 +728,11 @@ public class TeleportLoader
 				methods.game.openTab(InterfaceTab.INVENTORY, true);
 			}
 
+			RSItem selectedItem = methods.inventory.getSelectedItem();
+			if (selectedItem != null) {
+				selectedItem.doAction("Cancel");
+			}
+
 			RSWidget baseWidget = methods.interfaces.getComponent(187, 3);
 			if (baseWidget.isVisible())
 			{
@@ -790,6 +810,12 @@ public class TeleportLoader
 					if (methods.game.getCurrentTab() != InterfaceTab.INVENTORY) {
 						methods.game.openTab(InterfaceTab.INVENTORY, true);
 					}
+
+					RSItem selectedItem = methods.inventory.getSelectedItem();
+					if (selectedItem != null) {
+						selectedItem.doAction("Cancel");
+					}
+
 					item.doAction(teleportItem.getAction());
 				}
 			});
@@ -868,6 +894,11 @@ public class TeleportLoader
 		if (ring != null) {
 			if (methods.game.getCurrentTab() != InterfaceTab.INVENTORY) {
 				methods.game.openTab(InterfaceTab.INVENTORY, true);
+			}
+
+			RSItem selectedItem = methods.inventory.getSelectedItem();
+			if (selectedItem != null) {
+				selectedItem.doAction("Cancel");
 			}
 		}
 		else if (ring == null && RegionManager.useEquipmentJewellery())

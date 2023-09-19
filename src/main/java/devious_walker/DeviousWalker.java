@@ -1,5 +1,7 @@
 package devious_walker;
 
+import devious_walker.pathfinder.model.Teleport;
+import devious_walker.pathfinder.model.Transport;
 import devious_walker.region.RegionManager;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -17,12 +19,13 @@ import net.runelite.rsb.wrappers.RSWidget;
 import net.runelite.rsb.wrappers.common.Positionable;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static net.runelite.rsb.methods.MethodProvider.methods;
 import static net.runelite.rsb.methods.Methods.sleep;
+
+
+import net.runelite.cache.region.Region;
 
 @Slf4j
 public class DeviousWalker
@@ -108,7 +111,7 @@ public class DeviousWalker
 				y
 		);
 		 */
-		walkTile.doAction("Walk here");
+		walkTile.getClickBox().doAction("Walk here");
 	}
 
 	public static boolean walkTo(WorldArea worldArea)
@@ -149,22 +152,36 @@ public class DeviousWalker
 
 	public static boolean walkToCompletion(WorldArea worldArea)
 	{
-		while (methods.players.getMyPlayer().getLocation().getWorldLocation().distanceTo(worldArea) > 3 &&
+		if (!Walker.canWalk(worldArea)) {
+			log.warn("Failed to generate path attempting to walk to {}", worldArea);
+			return false;
+		}
+		long standingTimerStart = -
+				1;
+		RSPlayer local = methods.players.getMyPlayer();
+		while (worldArea.distanceTo(WorldPoint.fromLocalInstance(methods.client, local.getLocation().getLocalLocation())) > 3 &&
 				worldArea.getPlane() == methods.players.getMyPlayer().getLocation().getPlane()) {
 			sleep(4000, () -> getDestination() == null || getDestination().distanceTo(methods.players.getMyPlayer().getPosition().getWorldLocation()) < 15);
 			Walker.walkTo(worldArea);
+			if (!methods.players.getMyPlayer().isMoving()) {
+				if (standingTimerStart == -1) {
+					standingTimerStart = System.currentTimeMillis();
+				}
+				else if (System.currentTimeMillis() - standingTimerStart > 10000) {
+					log.warn("Player is stuck attempting to walk to {}", worldArea);
+					return false;
+				}
+			}
+			else {
+				standingTimerStart = -1;
+			}
 		}
 		return true;
 	}
 
 	public static boolean walkToCompletion(WorldPoint worldPoint)
 	{
-		while (methods.players.getMyPlayer().getLocation().getWorldLocation().distanceTo(worldPoint) > 3 &&
-				worldPoint.getPlane() == methods.players.getMyPlayer().getLocation().getPlane()) {
-			sleep(4000, () -> getDestination() == null || getDestination().distanceTo(methods.players.getMyPlayer().getPosition().getWorldLocation()) < 15);
-			Walker.walkTo(worldPoint);
-		}
-		return true;
+		return walkToCompletion(worldPoint.toWorldArea());
 	}
 
 	public static boolean walkToCompletion(Positionable locatable)

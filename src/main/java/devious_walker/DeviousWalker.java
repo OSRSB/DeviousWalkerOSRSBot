@@ -149,6 +149,10 @@ public class DeviousWalker
 		return walkTo(new WorldPoint(x, y, plane));
 	}
 
+    public static boolean walkTo(int regionId, int regionX, int regionY, int plane)
+    {
+        return walkTo(WorldPoint.fromRegion(regionId, regionX, regionY, plane));
+    }
 
 	public static boolean walkToCompletion(WorldArea worldArea)
 	{

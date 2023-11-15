@@ -78,7 +78,7 @@ public class DeviousWalker
 			log.debug("Destination {} is not in scene", worldPoint);
 			Tile nearestInScene = Arrays.stream(methods.client.getScene().getTiles()[methods.client.getPlane()])
 					.flatMap(Arrays::stream)
-					.filter(tile -> tile != null)
+					.filter(Objects::nonNull)
 					.min(Comparator.comparingInt(x -> x.getWorldLocation().distanceTo(worldPoint)))
 					.orElse(null);
 
@@ -149,6 +149,10 @@ public class DeviousWalker
 		return walkTo(new WorldPoint(x, y, plane));
 	}
 
+    public static boolean walkTo(int regionId, int regionX, int regionY, int plane)
+    {
+        return walkTo(WorldPoint.fromRegion(regionId, regionX, regionY, plane));
+    }
 
 	public static boolean walkToCompletion(WorldArea worldArea)
 	{
